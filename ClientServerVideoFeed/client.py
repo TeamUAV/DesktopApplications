@@ -1,11 +1,3 @@
-# import socket
-
-# client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# addr = ('localhost', 8080)
-
-# client.connect(addr)
-
 import cv2, base64, time
 
 video = cv2.VideoCapture(0)
@@ -24,5 +16,3 @@ while True:
 end = time.time()
 
 video.release()
-
-# print(f'frame rate = {count/(end - start)}')
