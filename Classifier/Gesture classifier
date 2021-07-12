@@ -364,9 +364,3 @@ bp="state_dict_model.pt"
 torch.save(hg_Dataset, bp)
 
 
-# In[ ]:
-
-
-
-
-
