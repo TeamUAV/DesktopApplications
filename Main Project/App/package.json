@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "yuki": "electron ."
+    "electron": "electron ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^13.1.6"
+    "electron": "^13.1.6",
+    "package.json": "^2.0.1"
   }
 }

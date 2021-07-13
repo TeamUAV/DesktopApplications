@@ -1,0 +1,58 @@
+#backgroundimage {
+  max-width: 1670px;
+  max-height: 790px;
+  width: 1670px;
+  height: 790px;
+  min-width: 1000px;
+  min-height: 500px;
+  position: relative;
+  resize: both;
+  overflow: hidden;
+  text-align: center;
+}
+
+#image {
+  display: inline;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  height: 300px;
+  min-width: 300px;
+  min-height: 200px;
+  max-height: 500px;
+  max-width: 700px;
+  resize: both;
+  overflow: hidden;
+  z-index: 9;
+  background-color: #f1f1f1;
+  border: 1px solid #d3d3d3;
+  text-align: center;
+}
+
+#imageheader {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  background-color: #2196f3;
+  color: #fff;
+}
+
+#imagetext {
+  position: relative;
+  z-index: 11;
+}
+
+.fill {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.fill img {
+  block-size: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+}

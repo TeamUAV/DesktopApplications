@@ -8,7 +8,7 @@ app.on('ready', () => {
             contextIsolation: false,
         }
     });
-    main.loadURL(`file://${__dirname}/Image.html`);
+    main.loadURL(`file://${__dirname}/front-end/index.html`);
 });
 ipcMain.on('key', (event, arrow) => {
     if (arrow === 'w') {
