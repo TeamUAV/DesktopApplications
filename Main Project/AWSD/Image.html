@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, 
+              initial-scale=1,
+              user-scalable=no" />
+  <title>Image Display</title>
+
+</head>
+<style>
+  #backgroundimage {
+    max-width: 1670px;
+    max-height: 790px;
+    width: 1670px;
+    height: 790px;
+    min-width: 1000px;
+    min-height: 500px;
+    position: relative;
+    resize: both;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  #image {
+    display: inline;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 400px;
+    height: 300px;
+    min-width: 300px;
+    min-height: 200px;
+    max-height: 500px;
+    max-width: 700px;
+    resize: both;
+    overflow: hidden;
+    z-index: 9;
+    background-color: #f1f1f1;
+    border: 1px solid #d3d3d3;
+    text-align: center;
+  }
+
+
+  #imageheader {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+  }
+
+  #imagetext {
+    position: relative;
+    z-index: 11;
+  }
+
+  .fill {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .fill img {
+    block-size: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    overflow: hidden
+  }
+</style>
+
+<body>
+
+  <div id="backgroundimage" class="fill">
+    <div id="image" class="fill" class="image">
+      <!-- <div id="imageheader">Click here to move</div>
+      <div id="imagetext">
+        <h1>Initial</h1>
+      </div> -->
+      <img
+        src="https://media.istockphoto.com/photos/empty-white-studio-room-abstract-background-picture-id1147521090?k=6&m=1147521090&s=612x612&w=0&h=HX_CcQT6DgJbjD7LsPsgJDazyaFSjh9l608U6zNN-1w=" />
+
+    </div>
+  </div>
+
+
+  <script>
+    var count = 0;
+    const electron = require('electron');
+    const { ipcRenderer } = electron;
+    document.addEventListener('keydown', (event) => {
+      const { key } = event;
+      console.log(key);
+      ipcRenderer.send('key', key);
+    });
+    ipcRenderer.on('Up', (event, arrow) => {
+      let h = document.createElement('h3');
+      var t = document.createTextNode("Up");
+      h.appendChild(t);
+      if (count === 0) {
+        image.appendChild(h);
+        count++;
+      }
+      else {
+        image.prepend(h)
+      }
+
+    });
+    ipcRenderer.on('Down', (event, arrow) => {
+      let h = document.createElement('h3');
+      var t = document.createTextNode("Down");
+      h.appendChild(t);
+      if (count === 0) {
+        image.appendChild(h);
+        count++;
+      }
+      else {
+        image.prepend(h)
+      }
+    });
+    ipcRenderer.on('Right', (event, arrow) => {
+      let h = document.createElement('h3');
+      var t = document.createTextNode("Right");
+      h.appendChild(t);
+      if (count === 0) {
+        image.appendChild(h);
+        count++;
+      }
+      else {
+        image.prepend(h)
+      }
+    });
+    ipcRenderer.on('Left', (event, arrow) => {
+      let h = document.createElement('h3');
+      var t = document.createTextNode("Left");
+      h.appendChild(t);
+      if (count === 0) {
+        image.appendChild(h);
+        count++;
+      }
+      else {
+        image.prepend(h)
+      }
+    });
+    dragElement(document.getElementById("image"));
+
+
+    var maxDragX = 200 - $('.image').outerWidth();
+    var maxDragY = 200 - $('.image').outerHeight();
+
+    Draggable.create('.image', {
+      bounds: $('#backgroundimage')
+    });
+
+    $(window).resize(function () {
+      Draggable.get('.image').applyBounds("#backgroundimage");
+    });
+
+    function dragElement(elmnt) {
+      var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      if (document.getElementById(elmnt.id + "header")) {
+        // if present, the header is where you move the DIV from:
+        document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+      } else {
+        // otherwise, move the DIV from anywhere inside the DIV:
+        elmnt.onmousedown = dragMouseDown;
+      }
+
+      function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // get the mouse cursor position at startup:
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        // call a function whenever the cursor moves:
+        document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // calculate the new cursor position:
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        // set the element's new position:
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        // stop moving when mouse button is released:
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+
+    }
+
+  </script>
+
+
+</body>
+
+</html>
