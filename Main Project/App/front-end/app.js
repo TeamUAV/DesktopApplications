@@ -4,54 +4,27 @@ const { ipcRenderer } = electron;
 document.addEventListener("keydown", (event) => {
   const { key } = event;
   console.log(key);
-  ipcRenderer.send("key", key);
+  ipcRenderer.send("event:keypress", key);
 });
-ipcRenderer.on("Up", (event, arrow) => {
-  let h = document.createElement("h3");
-  let t = document.createTextNode("Up");
-  h.appendChild(t);
-  if (count === 0) {
-    image.appendChild(h);
-    count++;
-  } else {
-    image.prepend(h);
-  }
+
+ipcRenderer.on("event:keypress:up", (event, arrow) => {
+  
 });
-ipcRenderer.on("Down", (event, arrow) => {
-  let h = document.createElement("h3");
-  let t = document.createTextNode("Down");
-  h.appendChild(t);
-  if (count === 0) {
-    image.appendChild(h);
-    count++;
-  } else {
-    image.prepend(h);
-  }
+ipcRenderer.on("event:keypress:down", (event, arrow) => {
+  
 });
-ipcRenderer.on("Right", (event, arrow) => {
-  let h = document.createElement("h3");
-  let t = document.createTextNode("Right");
-  h.appendChild(t);
-  if (count === 0) {
-    image.appendChild(h);
-    count++;
-  } else {
-    image.prepend(h);
-  }
+ipcRenderer.on("event:keypress:right", (event, arrow) => {
+  
 });
-ipcRenderer.on("Left", (event, arrow) => {
-  let h = document.createElement("h3");
-  let t = document.createTextNode("Left");
-  h.appendChild(t);
-  if (count === 0) {
-    image.appendChild(h);
-    count++;
-  } else {
-    image.prepend(h);
-  }
+ipcRenderer.on("event:keypress:left", (event, arrow) => {
+  
 });
 dragElement(document.getElementById("image"));
 
+let webcam = document.querySelector("#webcam img");
+ipcRenderer.on("event:frame:webcam", (event, data) => {
+  webcam.src = `data:image/jpg;base64,${data}`;
+})
 
 function dragElement(elmnt) {
   let pos1 = 0,
