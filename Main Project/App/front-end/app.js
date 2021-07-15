@@ -32,4 +32,3 @@ let webcamfeed = document.querySelector("#webcam img");
 ipcRenderer.on("event:frame:webcam", (event, data) => {
   webcamfeed.src = `data:image/jpg;base64,${data}`;
 })
-

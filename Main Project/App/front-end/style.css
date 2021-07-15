@@ -24,15 +24,16 @@
   bottom: 0;
   /* for 16/9 aspect ratio */
   width: 400px;
-  height: 225px;
+  height: auto;
   /* to keep the expansion limited*/
   min-width: 200px;
   min-height: 112.5px;
   max-width: 600px;
-  max-height:365.625px;
+  max-height:500px;
   /*to fit the content of the block*/
   block-size: fit-content;
-  resize: both;
+  /*aspect ratio is maintained but not sure if its 16:9*/
+  resize: horizontal;
   overflow: hidden;
   z-index: 9;
   background-color: none;
