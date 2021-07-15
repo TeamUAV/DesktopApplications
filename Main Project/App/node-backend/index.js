@@ -44,3 +44,17 @@ webcam.stdout.on('data', function(data) {
        webCamImage += data.toString();
       }
 });
+
+let droneFeedImage = '';
+let drone = child_process.spawn('python3', ['tello-communication/tello-communication.py']);
+drone.stdout.on('data', function(data) {
+    if (data.toString().includes('<ENDER && SEPARATOR>')){
+        let index = data.toString().indexOf('<ENDER && SEPARATOR>');
+        droneFeedImage+= data.toString().slice(0, index);
+        main.webContents.send('event:frame:drone', droneFeedImage)
+        droneFeedImage = '';
+      }
+      else{
+       droneFeedImage += data.toString();
+      }
+});

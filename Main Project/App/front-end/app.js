@@ -21,9 +21,16 @@ ipcRenderer.on("event:keypress:left", (event, arrow) => {
 });
 dragElement(document.getElementById("image"));
 
-let webcam = document.querySelector("#webcam img");
+let dronefeed = document.querySelector("#dronefeed img");
+ipcRenderer.on("event:frame:drone", (event, data) => {
+  dronefeed.src = `data:image/jpg;base64,${data}`;
+})
+
+
+
+let webcamfeed = document.querySelector("#webcam img");
 ipcRenderer.on("event:frame:webcam", (event, data) => {
-  webcam.src = `data:image/jpg;base64,${data}`;
+  webcamfeed.src = `data:image/jpg;base64,${data}`;
 })
 
 function dragElement(elmnt) {

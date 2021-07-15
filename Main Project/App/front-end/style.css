@@ -8,7 +8,7 @@
   display: none;
 }
 
-#backgroundimage {
+#dronefeed {
   width: 100vw;
   height: 100vh;
   position: relative;
@@ -52,12 +52,13 @@
   overflow: hidden;
 }
 
-.fill img {
+/* .fill img {
   block-size: 100%;
   min-width: 100%;
   min-height: 100%;
   overflow: hidden;
-}
+  object-fit: cover;
+} */
 
 #webcam img{
   object-fit: cover;
