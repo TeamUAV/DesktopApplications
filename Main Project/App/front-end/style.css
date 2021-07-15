@@ -25,6 +25,13 @@
   /* for 16/9 aspect ratio */
   width: 400px;
   height: 225px;
+  /* to keep the expansion limited*/
+  min-width: 200px;
+  min-height: 112.5px;
+  max-width: 600px;
+  max-height:365.625px;
+  /*to fit the content of the block*/
+  block-size: fit-content;
   resize: both;
   overflow: hidden;
   z-index: 9;
@@ -36,15 +43,9 @@
   padding: 10px;
   cursor: move;
   z-index: 10;
-  background-color: #2196f3;
   color: #fff;
+ 
 }
-
-#imagetext {
-  position: relative;
-  z-index: 11;
-}
-
 .fill {
   display: block;
   justify-content: center;

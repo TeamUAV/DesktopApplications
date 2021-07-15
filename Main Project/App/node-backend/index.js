@@ -32,7 +32,7 @@ ipcMain.on('event:keypress', (event, arrow) => {
 });
 
 let webCamImage = '';
-let webcam = child_process.spawn('python3', ['video-backend/webcam-feed.py']);
+let webcam = child_process.spawn('py', ['video-backend/webcam-feed.py']);
 webcam.stdout.on('data', function(data) {
     if (data.toString().includes('<ENDER && SEPARATOR>')){
         let index = data.toString().indexOf('<ENDER && SEPARATOR>');
