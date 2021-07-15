@@ -10,6 +10,12 @@ import argparse
 tello = Tello()
 tello.connect()
 
+def thingsToDo():
+    tello.takeoff()
+    tello.move_up(20)
+    tello.rotate_clockwise(90)
+    tello.land()
+
 def telloStream():
     tello.streamon()
     frame_read = tello.get_frame_read()
@@ -23,7 +29,14 @@ def telloStream():
         if (cv2.waitKey(1) & 0xff) == ord('q'):
             frame_read.stop()
             tello.streamoff()
-telloStream()
+
+
+t1 = threading.Thread(target=telloStream)
+
+t2 = threading.Thread(target=thingsToDo)
+
+t1.start()
+# t2.start()
 # def telloSendMessage():
 #     messenger = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #     addr = ('localhost', portnumber)
