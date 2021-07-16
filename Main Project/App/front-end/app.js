@@ -33,6 +33,11 @@ ipcRenderer.on("event:frame:webcam", (event, data) => {
   webcamfeed.src = `data:image/jpg;base64,${data}`;
 })
 
+// window.addEventListener('resize', () => {
+//   webcamfeed.
+// })
+
+
 function dragElement(elmnt) {
   let pos1 = 0,
     pos2 = 0,
