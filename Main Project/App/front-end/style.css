@@ -1,0 +1,77 @@
+*{
+  margin: none;
+  padding: none;
+  box-sizing: border-box;
+  
+}
+*::-webkit-scrollbar{
+  display: none;
+}
+
+#dronefeed {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  resize: both;
+  overflow: hidden;
+  text-align: center;
+}
+
+#dronefeed img{
+/*   width: 100vw;
+  height: 100vh; */
+  object-fit: cover;
+}
+
+#image {
+  display: inline;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  /* for 16/9 aspect ratio */
+  width: 400px;
+  height: auto;
+  /* to keep the expansion limited*/
+  min-width: 200px;
+  min-height: 112.5px;
+  max-width: 600px;
+  max-height:500px;
+  /*to fit the content of the block*/
+  block-size: fit-content;
+  /*aspect ratio is maintained but not sure if its 16:9*/
+  resize: horizontal;
+  overflow: hidden;
+  z-index: 9;
+  background-color: none;
+  text-align: center;
+}
+
+#imageheader {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  color: #fff;
+ 
+}
+.fill {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* .fill img {
+  block-size: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  object-fit: cover;
+} */
+
+#webcam img{
+  object-fit: cover;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
