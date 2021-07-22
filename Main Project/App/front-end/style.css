@@ -9,8 +9,8 @@
 }
 
 #dronefeed {
-  width: 100vw;
-  height: 100vh;
+/*   width: 100vw;
+  height: 100vh; */
   position: relative;
   resize: both;
   overflow: hidden;
@@ -18,19 +18,21 @@
 }
 
 #dronefeed img{
-/*   width: 100vw;
-  height: 100vh; */
+  width: 100vw;
+  height: 100vh;
   object-fit: cover;
+  background: no-repeat center center fixed;
+  background-size: cover;
+  z-index: 1;
 }
 
 #image {
-  display: inline;
   position: absolute;
   right: 0;
   bottom: 0;
   /* for 16/9 aspect ratio */
   width: 400px;
-  height: auto;
+  height: 225px;
   /* to keep the expansion limited*/
   min-width: 200px;
   min-height: 112.5px;
@@ -39,20 +41,20 @@
   /*to fit the content of the block*/
   block-size: fit-content;
   /*aspect ratio is maintained but not sure if its 16:9*/
-  resize: horizontal;
-  overflow: hidden;
-  z-index: 9;
+/* resize: horizontal;
+  overflow: hidden; */
+  z-index: 5;
   background-color: none;
   text-align: center;
 }
 
-#imageheader {
+/* #imageheader {
   padding: 10px;
   cursor: move;
   z-index: 10;
   color: #fff;
  
-}
+} */
 .fill {
   display: block;
   justify-content: center;
