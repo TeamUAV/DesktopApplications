@@ -64,25 +64,11 @@ function dragElement(e) {
 
     function resize(e) {
       const rect = el.getBoundingClientRect();
-
-
-
-      let newLeft = el.offsetLeft;
-      let newTop = el.offsetTop;
-
-      if (newLeft < viewport.left ||
-        newTop < viewport.top ||
-        newLeft + rect.width > viewport.right ||
-        newTop + rect.height > viewport.bottom
-      ) {
-        console.log("....")
-      }
-      else {
-        el.style.width = rect.width + (prevPosX - e.clientX) + "px";
-        el.style.height = rect.height + (prevPosY - e.clientY) + "px";
-        el.style.top = rect.top - (prevPosY - e.clientY) + "px";
-        el.style.left = rect.left - (prevPosX - e.clientX) + "px";
-      }
+      el.style.width = rect.width + (prevPosX - e.clientX) + "px";
+      el.style.height = rect.height + (prevPosY - e.clientY) + "px";
+      el.style.top = rect.top - (prevPosY - e.clientY) + "px";
+      el.style.left = rect.left - (prevPosX - e.clientX) + "px";
+      
 
       prevPosX = e.clientX;
       prevPosY = e.clientY;
