@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats | UAV</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+         :root {
+            --dark: #222831;
+            --accent: #43464D;
+            --light: #EEE;
+            --blue: #32E0C4;
+            --border: #393E46;
+            --length: 1000px;
+            --height: 600px;
+            --padding-main: 15px;
+        }
+        
+        *,
+        *::before,
+        *::after {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .container {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+        }
+        
+        .panel {
+            height: var(--height);
+            width: var(--length);
+            background-color: var(--dark);
+            padding: var(--padding-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .box {
+            border: 2px solid #393E46;
+            border-radius: 20px;
+            box-shadow: 0px 4px 9px #000000;
+        }
+        
+        .row1,
+        .row2 {
+            height: 40%;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 5px 0px;
+        }
+        
+        .row2 {
+            height: 60%;
+        }
+        
+        .row2 .col1,
+        .row2 .col2 {
+            height: 100%;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        
+        .row2 .col1 {
+            padding-right: 5px;
+        }
+        
+        .row2 .col2 {
+            height: 60%;
+            padding-left: 5px;
+        }
+        
+        .row2 .col1 .row1,
+        .row2 .col1 .row2 {
+            height: 50%;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        /* bruh */
+        
+        .battery {
+            height: 100%;
+            width: 30%;
+            margin-right: 5px;
+        }
+        
+        .accSpeed {
+            height: 100%;
+            width: 70%;
+            margin-left: 5px;
+        }
+        
+        .yaw {
+            height: 100%;
+            width: calc(100%/3);
+            margin-right: 5px;
+        }
+        
+        .pitch {
+            height: 100%;
+            width: calc(100%/3);
+            margin-right: 5px;
+        }
+        
+        .roll {
+            height: 100%;
+            width: calc(100%/3);
+        }
+        
+        .flight-time {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+        
+        svg text {
+            font-family: 'Montserrat', sans-serif;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 1.15rem;
+            letter-spacing: 0.18em;
+            fill: var(--light);
+        }
+        
+        svg .num {
+            font-family: 'Montserrat', sans-serif;
+            font-style: normal;
+            font-weight: 300;
+            font-size: 3rem;
+            letter-spacing: 0.18em;
+            fill: var(--blue);
+        }
+        
+        svg .num .seperator {
+            fill: var(--light);
+        }
+        
+        svg .bold {
+            font-weight: bold;
+            font-size: 3.5rem !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel">
+            <div class="row1">
+                <div class="battery box"></div>
+                <div class="accSpeed box"></div>
+            </div>
+            <div class="row2">
+                <div class="col1">
+                    <div class="row1">
+                        <div class="yaw box"></div>
+                        <div class="pitch box"></div>
+                        <div class="roll box"></div>
+                    </div>
+                    <div class="row2">
+                        <div class="box height"></div>
+                    </div>
+                </div>
+                <div class="col2">
+                    <div class="flight-time box"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const boxes = document.querySelectorAll('.box');
+        const battery = document.querySelector('.battery');
+        const accSpeed = document.querySelector('.accSpeed');
+        const yaw = document.querySelector('.yaw');
+        const pitch = document.querySelector('.pitch');
+        const roll = document.querySelector('.roll');
+        const flightTime = document.querySelector('.flight-time');
+        const height = document.querySelector('.height');
+
+        const boxPadding = 5;
+
+        for (let box of boxes) {
+            let svgHeight = box.clientHeight - boxPadding;
+            let svgWidth = box.clientWidth - boxPadding;
+
+            d3.select(box)
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+        }
+
+        function batteryMake(battery) {
+            let graph = d3.select('.battery').select('svg');
+
+            let svgHeight = document.querySelector('.battery').clientHeight - boxPadding;
+            let svgWidth = document.querySelector('.battery').clientWidth - boxPadding;
+
+            graph.remove();
+
+            graph = d3.select('.battery')
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+
+            const batteryScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([0, 360]);
+
+            const g = graph.append('g')
+                .attr('transform', function() {
+                    return `translate(${svgWidth/2} , ${svgHeight/2})`;
+                });
+
+            const arc = d3.arc()
+                .innerRadius(Math.min(svgHeight, svgWidth) / 2 - 20)
+                .outerRadius(Math.min(svgHeight, svgWidth) / 2 - 10)
+                .startAngle(0)
+                .endAngle((Math.PI * batteryScale(battery)) / 180);
+
+            g.append('path')
+                .attr('class', 'arc')
+                .attr('d', arc)
+                .attr('fill', '#32E0C4');
+
+            g.append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text('Battery')
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '2rem');
+        };
+
+        function yawMake(yaw) {
+            const spacing = 10;
+            let graph = d3.select('.yaw').select('svg');
+
+            let svgHeight = document.querySelector('.yaw').clientHeight - boxPadding;
+            let svgWidth = document.querySelector('.yaw').clientWidth - boxPadding;
+
+            graph.remove();
+
+            const xScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([0, svgWidth - 2 * spacing]);
+
+            graph = d3.select('.yaw')
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+
+            const headingG = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${svgHeight/8})`);
+
+            headingG.append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text('Yaw')
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '2rem');
+
+            const num = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${5 * svgHeight/8})`);
+
+            num.append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text(yaw)
+                .classed('num', true)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '3rem');
+
+            const bar = graph.append('g')
+                .attr('transform', `translate(${spacing} , ${7 * svgHeight/8})`);
+
+            bar.append('rect')
+                .attr('width', () => svgWidth - 2 * spacing)
+                .attr('height', 10)
+                .attr('fill', '#eee')
+                .attr('rx', '10')
+                .attr('ry', '10');
+
+            bar.append('rect')
+                .attr('width', xScale(yaw))
+                .attr('height', '10')
+                .style('fill', '#32E0C4')
+                .attr('rx', '10')
+                .attr('ry', '10');
+        }
+
+        function pitchMake(pitch) {
+            const spacing = 10;
+            let graph = d3.select('.pitch').select('svg');
+
+            let svgHeight = document.querySelector('.pitch').clientHeight - boxPadding;
+            let svgWidth = document.querySelector('.pitch').clientWidth - boxPadding;
+
+            graph.remove();
+
+            const xScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([0, svgWidth - 2 * spacing]);
+
+            graph = d3.select('.pitch')
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+
+            const headingG = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${svgHeight/8})`);
+
+            headingG.append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text('Pitch')
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '2rem');
+
+            const num = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${5 * svgHeight/8})`);
+
+            num.append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text(pitch)
+                .classed('num', true)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '3rem');
+
+            const bar = graph.append('g')
+                .attr('transform', `translate(${spacing} , ${7 * svgHeight/8})`);
+
+            bar.append('rect')
+                .attr('width', () => svgWidth - 2 * spacing)
+                .attr('height', 10)
+                .attr('fill', '#eee')
+                .attr('rx', '10')
+                .attr('ry', '10');
+
+            bar.append('rect')
+                .attr('width', xScale(pitch))
+                .attr('height', '10')
+                .style('fill', '#32E0C4')
+                .attr('rx', '10')
+                .attr('ry', '10');
+        }
+
+        function rollMake(roll) {
+            const spacing = 10;
+            let graph = d3.select('.roll').select('svg');
+
+            let svgHeight = document.querySelector('.roll').clientHeight - boxPadding;
+            let svgWidth = document.querySelector('.roll').clientWidth - boxPadding;
+
+            graph.remove();
+
+            const xScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([0, svgWidth - 2 * spacing]);
+
+            graph = d3.select('.roll')
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+
+            const headingG = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${svgHeight/8})`);
+
+            headingG.append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text('Roll')
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '2rem');
+
+            const num = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${5 * svgHeight/8})`);
+
+            num.append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text(roll)
+                .classed('num', true)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '3rem');
+
+            const bar = graph.append('g')
+                .attr('transform', `translate(${spacing} , ${7 * svgHeight/8})`);
+
+            bar.append('rect')
+                .attr('width', () => svgWidth - 2 * spacing)
+                .attr('height', 10)
+                .attr('fill', '#eee')
+                .attr('rx', '10')
+                .attr('ry', '10');
+
+            bar.append('rect')
+                .attr('width', xScale(roll))
+                .attr('height', '10')
+                .style('fill', '#32E0C4')
+                .attr('rx', '10')
+                .attr('ry', '10');
+        }
+
+        function flightTimeMake(flightTime) {
+            let graph = d3.select('.flight-time').select('svg');
+
+            let svgHeight = document.querySelector('.flight-time').clientHeight - boxPadding;
+            let svgWidth = document.querySelector('.flight-time').clientWidth - boxPadding;
+
+            graph.remove();
+
+            graph = d3.select('.flight-time')
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+
+            const num = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${svgHeight/2})`)
+                .append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .classed('num bold', true)
+                .text(flightTime)
+                .attr('text-anchor', 'middle')
+
+            const heading = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${7*svgHeight/8})`)
+                .append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text('Flight - Time')
+                .attr('text-anchor', 'start');
+        }
+
+        function heightMake(height) {
+            let graph = d3.select('.height').select('svg');
+
+            let svgHeight = document.querySelector('.height').clientHeight - boxPadding;
+            let svgWidth = document.querySelector('.height').clientWidth - boxPadding;
+
+            graph.remove();
+
+            graph = d3.select('.height')
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+
+            const num = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${svgHeight/2})`)
+                .append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .classed('num bold', true)
+                .text(height + 'm')
+                .attr('text-anchor', 'middle')
+
+            const heading = graph.append('g')
+                .attr('transform', `translate(${svgWidth/2} , ${7*svgHeight/8})`)
+                .append('text')
+                .attr('x', '0')
+                .attr('y', '0')
+                .attr('dy', '.35em')
+                .text('Height')
+                .attr('text-anchor', 'start');
+        }
+
+        function accSpeedMake(accelerationX, accelerationY, accelerationZ, speedX, speedY, speedZ) {
+            let graph = d3.select('.accSpeed').select('svg');
+
+            let svgHeight = document.querySelector('.accSpeed').clientHeight - boxPadding;
+            let svgWidth = document.querySelector('.accSpeed').clientWidth - boxPadding;
+            const height = 4 * svgHeight / 5;
+
+            graph.remove();
+
+            graph = d3.select('.accSpeed')
+                .append('svg')
+                .attr('height', svgHeight)
+                .attr('width', svgWidth);
+
+            const accGraph = graph.append('g')
+                .attr('transform', `translate(0,0)`);
+
+            const speedGraph = graph.append('g')
+                .attr('transform', `translate(${0.4 * svgWidth},0)`);
+
+            accGraph.append('text')
+                .attr('x', () => (0.4 / 2) * svgWidth)
+                .attr('y', () => (9 / 10) * svgHeight)
+                .attr('dy', '.35em')
+                .text('Acceleration')
+                .attr('text-anchor', 'middle');
+
+            speedGraph.append('text')
+                .attr('x', () => (0.6 / 2) * svgWidth)
+                .attr('y', () => (9 / 10) * svgHeight)
+                .attr('dy', '.35em')
+                .text('Speed')
+                .attr('text-anchor', 'middle');
+
+            const yScale = d3.scaleLinear().domain([0, 100]).range([height, 0]);
+            const colors = ['#EEE', '#43464D', '#32E0C4'];
+            const axes = ['X', 'Y', 'Z'];
+
+            const accGraphBar = accGraph.append('g')
+                .attr('transform', `translate(${svgWidth*0.4/10} , 0)`);
+
+            accGraphBar.selectAll('rect')
+                .data([accelerationX, accelerationY, accelerationZ])
+                .enter()
+                .append('rect')
+                .attr('width', '10')
+                .attr('height', function(d, i) {
+                    return height - yScale(d);
+                })
+                .attr('x', function(d, i) {
+                    return i * 35;
+                })
+                .attr('y', function(d, i) {
+                    return yScale(d);
+                })
+                .style('fill', (d, i) => colors[i % 3]);
+
+            const accGraphLegends = accGraph.append('g')
+                .attr('transform', `translate(${0.2*svgWidth} , 0)`);
+
+            accGraphLegends.selectAll('rect')
+                .data([accelerationX, accelerationY, accelerationZ])
+                .enter()
+                .append('rect')
+                .attr('height', () => (4 * svgHeight / 25) - 20)
+                .attr('width', () => (4 * svgHeight / 25) - 20)
+                .attr('x', function(d, i) {
+                    return ((1) * 0.4 * svgWidth) / 10;
+                })
+                .attr('y', function(d, i) {
+                    return ((i + 1) * 4 * svgHeight) / 25;
+                })
+                .style('fill', (d, i) => colors[i % 3]);
+
+            accGraphLegends.selectAll('text')
+                .data([accelerationX, accelerationY, accelerationZ])
+                .enter()
+                .append('text')
+                .text(function(d, i) {
+                    return `${axes[i%3]} = ${d}`;
+                })
+                .attr('dy', '.35em')
+                .attr('text-anchor', 'start')
+                .attr('x', function(d, i) {
+                    return ((1) * 0.8 * svgWidth) / 10;
+                })
+                .attr('y', function(d, i) {
+                    return ((i + 1) * 4 * svgHeight) / 25;
+                });
+
+            const speedScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([0, 360]);
+
+            const arcX = d3.arc()
+                .innerRadius(() => ((3 * svgHeight) / 10) - 20)
+                .outerRadius(() => ((3 * svgHeight) / 10) - 15)
+                .startAngle(0)
+                .endAngle(function() {
+                    return (Math.PI * speedScale(speedX)) / 180;
+                });
+
+            const arcY = d3.arc()
+                .innerRadius(() => ((3 * svgHeight) / 10) - 20)
+                .outerRadius(() => ((3 * svgHeight) / 10) - 15)
+                .startAngle(0)
+                .endAngle(function() {
+                    return (Math.PI * speedScale(speedY)) / 180;
+                });
+
+            const arcZ = d3.arc()
+                .innerRadius(() => ((3 * svgHeight) / 10) - 20)
+                .outerRadius(() => ((3 * svgHeight) / 10) - 15)
+                .startAngle(0)
+                .endAngle(function() {
+                    return (Math.PI * speedScale(speedZ)) / 180;
+                });
+
+            speedGraph.append('g')
+                .attr('transform', `translate(${0.1 * svgWidth} , ${0.3 * svgHeight})`)
+                .append('path')
+                .attr('class', 'arc')
+                .attr('d', arcX)
+                .attr('fill', colors[0]);
+
+            speedGraph.append('g')
+                .attr('transform', `translate(${0.3 * svgWidth} , ${0.3 * svgHeight})`)
+                .append('path')
+                .attr('class', 'arc')
+                .attr('d', arcY)
+                .attr('fill', colors[1]);
+
+            speedGraph.append('g')
+                .attr('transform', `translate(${0.5 * svgWidth} , ${0.3 * svgHeight})`)
+                .append('path')
+                .attr('class', 'arc')
+                .attr('d', arcZ)
+                .attr('fill', colors[2]);
+
+            speedGraph.selectAll('text')
+                .data([speedX, speedY, speedZ])
+                .enter()
+                .append('text')
+                .attr('x', function(d, i) {
+                    return (2 * i + 1) * svgWidth / 10;
+                })
+                .attr('text-anchor', 'middle')
+                .attr('y', function(d, i) {
+                    return 7 * svgHeight / 10;
+                })
+                .text(function(d, i) {
+                    return axes[i % 3] + ' = ' + d;
+                });
+
+            speedGraph.append('text')
+                .attr('x', () => 0.1 * svgWidth)
+                .attr('y', () => 7 * svgHeight / 10)
+                .attr('text-anchor', 'middle')
+                .text('X = ' + speedX);
+        }
+
+        function update() {
+
+            const battery = Math.trunc(Math.random() * 100 + 1);
+            const accelerationX = Math.trunc(Math.random() * 100 + 1);
+            const accelerationY = Math.trunc(Math.random() * 100 + 1);
+            const accelerationZ = Math.trunc(Math.random() * 100 + 1);;
+            const speedX = Math.trunc(Math.random() * 100 + 1);
+            const speedY = Math.trunc(Math.random() * 100 + 1);
+            const speedZ = Math.trunc(Math.random() * 100 + 1);
+            const yaw = Math.trunc(Math.random() * 100 + 1);
+            const roll = Math.trunc(Math.random() * 100 + 1);
+            const pitch = Math.trunc(Math.random() * 100 + 1);
+            const hr = Math.trunc(Math.random() * 24);
+            const min = Math.trunc(Math.random() * 60);
+            const sec = Math.trunc(Math.random() * 60);
+            const height = Math.trunc(Math.random() * 100 + 1);
+
+            batteryMake(battery);
+            accSpeedMake(accelerationX, accelerationY, accelerationZ, speedX, speedY, speedZ);
+            yawMake(yaw);
+            rollMake(roll);
+            pitchMake(pitch);
+            flightTimeMake(hr + ':' + min + ':' + sec);
+            heightMake(height);
+        }
+    </script>
+</body>
+
+</html>
